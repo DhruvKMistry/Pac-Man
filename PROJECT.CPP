@@ -1,0 +1,485 @@
+#include<iostream.h>
+#include<conio.h>
+#include<dos.h>
+#include<stdio.h>
+#include<graphics.h>
+#include<process.h>
+#include<stdlib.h>
+#include<math.h>
+class high {int score;
+	    char name[20];
+	    int moves;
+     public:void getdata(int s,int m)
+	    {cout<<"\n ENTER THE NAME:-";
+	     gets(name);
+	     moves=m;
+	     score=s*2+800;
+	     clrscr();
+	     cleardevice();
+	     }//close of getdata
+	    void putdata()
+	    {cout<<"\n NAME:-"<<name;
+	     cout<<"\n SCORE:-"<<score;
+	     cout<<"\n moves:-"<<moves;
+	    } //close of putdata
+	    int getscore()
+	    {return score;
+	     }
+	     }h1,h2;
+void map();
+void pac(int,int,int,int);
+void higs();
+int game();
+void gameo();
+void ghost(int,int,int);
+void main()
+{
+ char key;
+ clrscr();
+ int gd=DETECT,gm,i=0,j,x=70,time=-90;
+ initgraph(&gd,&gm,"c:\\turboc3\\bgi");
+ int m=210,n=221,k=0;
+ for(i=1;i<29;++i,++k)
+ for(j=1;j<21;++j)
+ if(k==7)
+  k+=2;
+ if(k==15)
+ k=1;
+ ghost(11+(22*i),(22*j)+11,k);
+ }
+ settextstyle(0,0,6);
+ setcolor(15);
+ outtextxy(290,201,"PACMAN");
+ setfillstyle(1,14);
+ setcolor(14);
+ pieslice(m,n,45,315,90);
+ setfillstyle(1,0);
+ setcolor(0);
+ pieslice(m+8,n-40,0,360,4);
+ settextstyle(0,0,40);
+ setcolor(14);
+for(i=0;i<2;++i)
+{
+sound(493.9);
+ delay(time+250);
+sound(987.8);
+ delay(time+250);
+sound(740.0);
+ delay(time+250);
+sound(622.3);
+ delay(time+250);
+sound(987.8);
+ delay(time+225);
+sound(698.5);
+ delay(time+250);
+nosound();
+ delay(time+100);
+sound(523.3);
+ delay(time+260);
+sound(1046.5);
+ delay(time+250);
+sound(784.0);
+ delay(time+250);
+sound(659.3);
+ delay(time+150);
+sound(1046.5);
+ delay(time+225);
+sound(784.0);
+ delay(time+350);
+sound(659.3);
+ delay(time+200);
+sound(698.5);
+ delay(time+250);
+sound(740.0);
+ delay(time+125);
+sound(784.0);
+ delay(time+250);
+sound(830.6);
+ delay(time+125);
+sound(880.0);
+ delay(time+250);
+sound(987.8);
+ delay(time+250);
+nosound();
+ }
+settextstyle(0,0,3);
+setcolor(15);
+ outtextxy(67,354,"PRESS ENTER TO CONTINUE");
+do{i=0;
+ key=getch();
+ cleardevice();
+ switch(key)
+  {case'w':
+   case'W':if(x>140)
+	    x-=70;
+	   break;
+   case's':
+   case'S':if(x<240)
+	    x+=70;
+	   break;
+   case 13:j=(x-70)/70;
+	   switch(j)
+	  {case 1:j=game();
+		  break;
+	   case 2:higs();
+		  break;
+	   case 3:cleardevice();
+		  exit(0);
+	  }
+	  break;
+    default:continue;
+
+   }
+ setbkcolor(0);
+ setfillstyle(1,4);
+if(x!=70)
+ bar(115,x,520,x+50);
+ settextstyle(0,0,40);
+ setcolor(14);
+ outtextxy(33,23,"MAIN MENU");
+ settextstyle(0,0,5);
+ setcolor(10);
+ outtextxy(160,150,"LET's GO");
+ outtextxy(120,220,"HIGH SCORE");
+ outtextxy(141,290,"EXIT GAME");
+  }while(i<=10);
+
+ getch();
+ closegraph();
+ }
+
+
+void higs()
+{clrscr();
+ cleardevice();
+ setbkcolor(1);
+  fstream f1;
+  int i=0;
+ f1.close();
+ f1.open("sscore.dat",ios::binary|ios::in);
+ if(!f1)
+ {cout<<"\nDisplay file not open";
+  getch();
+  exit(0);
+  }
+ while(f1.read((char*)&h1,sizeof(high)))
+ {cout<<"\nThe score number"<<++i;
+  h1.putdata();
+  if(i%10==0)
+   getch();
+  }
+ f1.close();
+ getch();
+ clrscr();
+ cleardevice();
+ }
+int game()
+{cleardevice();
+ int gameover=3,life=1;
+ int pacx=33,tpacx,tpacy,pacy=33;
+ int g1x=121,g1y=121,tg1x,tg1y,g2x=250,g2y=300,g3x=250,g3y=250;
+ int a=0,i,j,y,sum=0;
+ int moves=0;
+ char ch,key;
+ int pos[][23] = {
+ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+ 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1,
+ 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1,
+ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+ 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1,
+ 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1,
+ 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1,
+ 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1,
+ 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1,
+ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+ 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1,
+ 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1,
+ 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 1,
+ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1,
+ 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1,
+ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+  };
+
+randomize();
+pac(moves,pacx,pacy,3);
+cout<<"\n\n\n\n\n\n\n\n\t\t\t\t\t\t\t\t\t";
+ do{sum=0;
+    map();
+     for(i=0;i<21;++i)
+      for(j=0;j<23;++j)
+       {sum+=pos[i][j];
+	if(pos[i][j]==0)
+	{setfillstyle(1,15);
+	 setcolor(15);
+	 pieslice(j*22+11,i*22+11,0,360,2);
+	 }
+	}
+     settextstyle(0,0,2);
+     setcolor(3);
+     outtextxy(560,100,"Score");
+     cout<<(sum*2)+800<<"\b\b\b\b";
+     ghost(g3x,g3y,(moves/5)+2);
+     ghost(g2x,g2y,(moves/5)+4);
+     ghost(g1x,g1y,(moves/5)+6);
+     tpacx=pacx;
+     tpacy=pacy;
+     i=(tpacx-11)/22;
+     j=(tpacy-11)/22;
+     delay(500);
+
+     if(kbhit())
+      ch=getch();
+
+     if(ch==char(27))
+     {cleardevice();
+      h2.getdata(sum,moves);
+      gameo();
+      return 0;
+      }
+
+    if(pos[j][i]!=1)
+     switch (ch)
+      {case'w':pacy-=22;
+	       y=1;
+	       break;
+       case's':pacy+=22;
+	       y=2;
+	       break;
+       case'd':pacx += 22;
+	       y=3;
+	       break;
+       case'a':pacx-=22;
+	       y=4;
+	       break;
+       }
+     cleardevice();
+     map();
+     i=(pacx-11)/22;
+     j=(pacy-11)/22;
+     if(pos[j][i]==1)
+      {pacx=tpacx;
+       pacy=tpacy;
+       }
+    pac(moves,pacx,pacy,y);
+     moves++;
+    if(pos[j][i]==0)
+     pos[j][i]=2;
+
+	   /*Ghost movement*/
+//ghost1
+if(abs(g1x-pacx)<=22&&abs(g1y-pacy)<=22)
+{--gameover;//pac dead
+ life=0;}
+if(g1y>pacy)
+ g1y-=11;
+if(g1x<pacx)
+ g1x+=11;
+if(g1y<pacy)
+ g1y+=11;
+if(g1x>pacx)
+ g1x-=11;
+//ghost2
+if(abs(g2x-pacx)<=22&&abs(g2y-pacy)<=22)
+{--gameover;//pac dead
+ life=0;}
+if(g2y>pacy)
+ g2y-=11;
+if(g2x<pacx)
+ g2x+=11;
+if(g2y<pacy)
+ g2y+=11;
+if(g2x>pacx)
+ g2x-=11;
+//ghost3
+if(abs(g3x-pacx)<=22&&abs(g3y-pacy)<=22)
+{--gameover;//pac dead
+ life=0;}
+if(g3y>pacy)
+ g3y-=5;
+if(g3x<pacx)
+ g3x+=5;
+if(g3y<pacy)
+ g3y+=5;
+if(g3x>pacx)
+ g3x-=5;
+
+if(life==0)
+{life=1;
+ if(gameover<0)
+ {cleardevice();
+  //h2.getdata(sum,moves);//gameover
+  //gameo();
+  outtextxy(160,150,"FILE SAVED");
+  getch();
+  return 0;
+  }
+ else
+  {pacx=33;
+   pacy=33;
+   }
+ }//life
+ }while (a<100);
+
+ closegraph();
+ getch();
+ return(-2);
+ }
+
+void gameo()
+{fstream f1,f2;
+ int flag=0;
+f1.open("sscore.dat",ios::binary|ios::in);
+f2.open("temp.dat",ios::binary|ios::out);
+if(!f2)
+{cout<<"\nFile not geting saved";
+ exit(0);
+ }
+while(f1.read((char*)&h1,sizeof(high)))
+ {if(h1.getscore()<h2.getscore())
+  {f2.write((char*)&h2,sizeof(high));
+   flag=1;
+   break;
+   }
+ else
+  f2.write((char*)&h1,sizeof(high));
+  }
+
+if(flag==0)
+ f2.write((char*)&h2,sizeof(high));
+
+f1.close();
+f2.close();
+remove("sscore.dat");
+rename("temp.dat","sscore.dat");
+flag=0;
+ }
+
+void pac(int moves,int x,int y,int c)
+{setfillstyle(1,14);
+ setcolor(14);
+switch(c)
+{case 3:if(moves%2==0)
+	   {pieslice(x,y,0,360,9);
+	    }
+	 else
+	  pieslice(x,y, 315,45 , 9);
+	  setfillstyle(1,0);
+	  setcolor(0);
+	  pieslice(x+3,y-4,0,360,1);
+	 break;
+ case 2:pieslice(x,y,0,360,9);
+	 setfillstyle(1,0);
+	 setcolor(0);
+	 if(moves%2!=0)
+	  pieslice(x,y,225,315,9);
+	 pieslice(x+4,y+2,0,360,1);
+	 break;
+ case 1:pieslice(x,y, 0, 360, 9);
+	 setfillstyle(1,0);
+	 setcolor(0);
+	 if(moves%2!=0)
+	  pieslice(x,y,50,110,9);
+	 pieslice(x-4,y-4,0,360,1);
+	 break;
+ case 4:pieslice(x,y, 0,360 , 9);
+	 setfillstyle(1,0);
+	 setcolor(0);
+	 if(moves%2!=0)
+	  pieslice(x,y,145,220,9);
+	 pieslice(x-3,y-4,0,360,1);
+	 break;
+	 }
+ }
+void ghost(int g1x,int g1y,int i)
+{setfillstyle(1,i);
+ setcolor(i);
+ pieslice(g1x,g1y,0,180,10);
+ bar(g1x-10,g1y,g1x+10,g1y+8);
+ pieslice(g1x-10+3.3,g1y+8,180,360,3.3);
+ pieslice(g1x-10+(3*3.4),g1y+8,180,360,3.3);
+ pieslice(g1x+10-3.3,g1y+8,180,360,3.3);
+ setcolor(0);
+ pieslice(g1x-5,g1y,0,360,3);
+ pieslice(g1x+5,g1y,0,360,3);
+ }
+
+
+
+void map()
+{
+
+int i=-3;
+ setcolor(1);
+ line(88+(i*22),22,550+(i*22),22); //anticlock
+ line(88+(i*22),22,88+(i*22),176);
+ line(88 + (i * 22), 176, 176 + (i * 22), 176);
+ line(176 + (i * 22), 286, 176 + (i * 22), 176);
+ line(88 + (i * 22), 286, 176 + (i * 22), 286);
+ line(88 + (i * 22), 286, 88 + (i * 22), 440);
+ line(88 + (i * 22), 440, 550 + (i * 22), 440);
+ line(550 + (i * 22), 440, 550 + (i * 22), 286);
+ line(550 + (i * 22), 286, 462 + (i * 22), 286);
+ line(462 + (i * 22), 286, 462 + (i * 22), 176);
+ line(462 + (i * 22), 176, 550 + (i * 22), 176);
+ line(550 + (i * 22), 176, 550 + (i * 22), 22);
+ line(88 + 2 + (i * 22), 22 + 2, 550 + 2 + (i * 22), 22 + 2); //anticlock
+ line(88 + 2 + (i * 22), 22 + 2, 88 + 2 + (i * 22), 176 + 2);
+ line(88 + 2 + (i * 22), 176 + 2, 176 + 2 + (i * 22), 176 + 2);
+ line(176 + 2 + (i * 22), 286 + 2, 176 + 2 + (i * 22), 176 + 2);
+ line(88 + 2 + (i * 22), 286 + 2, 176 + 2 + (i * 22), 286 + 2);
+ line(88 + 2 + (i * 22), 286 + 2, 88 + 2 + (i * 22), 440 + 2);
+ line(88 + 2 + (i * 22), 440 + 2, 550 + 2 + (i * 22), 440 + 2);
+ line(550 + 2 + (i * 22), 440 + 2, 550 + 2 + (i * 22), 286 + 2);
+ line(550 + 2 + (i * 22), 286 + 2, 462 + 2 + (i * 22), 286 + 2);
+ line(462 + 2 + (i * 22), 286 + 2, 462 + 2 + (i * 22), 176 + 2);
+ line(462 + 2 + (i * 22), 176 + 2, 550 + 2 + (i * 22), 176 + 2);
+ line(550 + 2 + (i * 22), 176 + 2, 550 + 2 + (i * 22), 22 + 2);
+
+ setfillstyle(1, BLUE);
+ bar(418 + (i * 22), 110, 440 + (i * 22), 220); //vir //bar(left,top,right,down)
+ bar(352 + (i * 22), 154, 418 + (i * 22), 176);
+
+
+ bar(396 + (i * 22), 110, 242 + (i * 22), 132); //hr
+ bar(308 + (i * 22), 176, 330 + (i * 22), 110);
+
+ bar(198 + (i * 22), 110, 220 + (i * 22), 220); //vir
+ bar(198 + (i * 22), 154, 286 + (i * 22), 176);
+
+ bar(396 + (i * 22), 264, 242 + (i * 22), 286);
+ bar(330 + (i * 22), 308, 308 + (i * 22), 286);
+
+ bar(396 + (i * 22), 352, 242 + (i * 22), 374);
+ bar(330 + (i * 22), 374, 308 + (i * 22), 396);
+
+ bar(110 + (i * 22), 396, 286 + (i * 22), 418); //hr
+ bar(220 + (i * 22), 396, 198 + (i * 22), 374);
+
+ bar(352 + (i * 22), 396, 528 + (i * 22), 418); //hr
+ bar(418 + (i * 22), 396, 440 + (i * 22), 374);
+
+
+ bar(462 + (i * 22), 44, 528 + (i * 22), 88);
+ bar(462 + (i * 22), 110, 528 + (i * 22), 154);   //bar(left,top,right,down)
+ bar(352 + (i * 22), 88, 440 + (i * 22), 44);
+ bar(198 + (i * 22), 44, 286 + (i * 22), 88);
+ bar(110 + (i * 22), 44, 176 + (i * 22), 88);
+ bar(110 + (i * 22), 110, 176 + (i * 22), 154);
+
+ bar(418 + (i * 22), 242, 440 + (i * 22), 286);   //dreapta
+ bar(198 + (i * 22), 242, 220 + (i * 22), 286);   //stanga
+ bar(198 + (i * 22), 308, 286 + (i * 22), 330);   //joe
+ bar(352 + (i * 22), 308, 440 + (i * 22), 330);
+ rectangle(396 + (i * 22), 242, 242 + (i * 22), 198);   //center
+
+ bar(462 + (i * 22), 308, 506 + (i * 22), 374);   //hr
+ bar(506 + (i * 22), 330, 528 + (i * 22), 308);
+
+ bar(132 + (i * 22), 308, 176 + (i * 22), 374);   //hr
+ bar(110 + (i * 22), 330, 132 + (i * 22), 308);
+ }
